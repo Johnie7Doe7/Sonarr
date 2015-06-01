@@ -28,11 +28,11 @@ namespace NzbDrone.Core.Notifications.CustomScript
             _customScriptService.OnDownload(message.Series, message.EpisodeFile, Settings);
         }
 
-        public override void AfterRename(Series series)
+        public override void OnRename(Series series)
         {
             //TODO: After rename needs to be optional before we can enable this
             //If this is enabled after merge we need to enable after rename for everything except for Custom Script
-//            _customScriptService.AfterRename(series, Settings);
+//            _customScriptService.OnRename(series, Settings);
         }
 
         public override string Name
