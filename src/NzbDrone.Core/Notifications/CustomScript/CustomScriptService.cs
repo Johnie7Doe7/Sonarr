@@ -4,27 +4,31 @@ using System.IO;
 using System.Linq;
 using FluentValidation.Results;
 using NLog;
+using NzbDrone.Common.Disk;
 using NzbDrone.Common.Processes;
 using NzbDrone.Core.MediaFiles;
 using NzbDrone.Core.Tv;
+using NzbDrone.Core.Validation;
 
 namespace NzbDrone.Core.Notifications.CustomScript
 {
     public interface ICustomScriptService
     {
         void OnDownload(Series series, EpisodeFile episodeFile, CustomScriptSettings settings);
-        void AfterRename(Series series, CustomScriptSettings settings);
+        void OnRename(Series series, CustomScriptSettings settings);
         ValidationFailure Test(CustomScriptSettings settings);
     }
 
     public class CustomScriptService : ICustomScriptService
     {
         private readonly IProcessProvider _processProvider;
+        private readonly IDiskProvider _diskProvider;
         private readonly Logger _logger;
 
-        public CustomScriptService(IProcessProvider processProvider, Logger logger)
+        public CustomScriptService(IProcessProvider processProvider, IDiskProvider diskProvider, Logger logger)
         {
             _processProvider = processProvider;
+            _diskProvider = diskProvider;
             _logger = logger;
         }
 
@@ -52,7 +56,7 @@ namespace NzbDrone.Core.Notifications.CustomScript
             ExecuteScript(environmentVariables, settings);
         }
 
-        public void AfterRename(Series series, CustomScriptSettings settings)
+        public void OnRename(Series series, CustomScriptSettings settings)
         {
             var environmentVariables = new StringDictionary();
 
@@ -67,6 +71,11 @@ namespace NzbDrone.Core.Notifications.CustomScript
 
         public ValidationFailure Test(CustomScriptSettings settings)
         {
+            if (!_diskProvider.FileExists(settings.Path))
+            {
+                return new NzbDroneValidationFailure("Path", "File does not exist");
+            }
+
             return null;
         }
 

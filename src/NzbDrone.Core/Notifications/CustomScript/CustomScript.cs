@@ -15,8 +15,7 @@ namespace NzbDrone.Core.Notifications.CustomScript
 
         public override string Link
         {
-            //TODO: Provide a proper link on how to use the custom script
-            get { return "http://wiki.sonarr.tv/"; }
+            get { return "https://github.com/Sonarr/Sonarr/wiki/Custom-Post-Processing-Scripts"; }
         }
 
         public override void OnGrab(string message)
@@ -30,9 +29,7 @@ namespace NzbDrone.Core.Notifications.CustomScript
 
         public override void OnRename(Series series)
         {
-            //TODO: After rename needs to be optional before we can enable this
-            //If this is enabled after merge we need to enable after rename for everything except for Custom Script
-//            _customScriptService.OnRename(series, Settings);
+            _customScriptService.OnRename(series, Settings);
         }
 
         public override string Name
@@ -40,6 +37,14 @@ namespace NzbDrone.Core.Notifications.CustomScript
             get
             {
                 return "Custom Script";
+            }
+        }
+
+        public override bool SupportsOnGrab
+        {
+            get
+            {
+                return false;
             }
         }
 
